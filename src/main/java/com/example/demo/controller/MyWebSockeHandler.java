@@ -26,13 +26,13 @@ public class MyWebSockeHandler extends SimpleChannelInboundHandler<Object> {
     @Override
     public void channelActive (ChannelHandlerContext context)throws Exception{
         NettyConfig.group.add(context.channel());
-        System.out.println("客户端与服务端连接开启");
+        System.out.println("客户端与服务端连接开启: "+ context.channel().remoteAddress().toString());
     }
     //客户端与服务端断开连接的时候调用
     @Override
     public void channelInactive(ChannelHandlerContext context)throws Exception{
         NettyConfig.group.remove(context.channel());
-        System.out.println("客户端与服务端连接断开");
+        System.out.println("客户端与服务端连接断开 "+ context.channel().remoteAddress().toString());
     }
     //服务端接收客户端发送过来的数据结束之后调用
     @Override
