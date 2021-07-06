@@ -9,6 +9,8 @@ import io.netty.channel.EventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.handler.codec.http.HttpObjectAggregator;
 import io.netty.handler.codec.http.HttpServerCodec;
+import io.netty.handler.logging.LogLevel;
+import io.netty.handler.logging.LoggingHandler;
 import io.netty.handler.stream.ChunkedWriteHandler;
 
 /**
@@ -20,6 +22,7 @@ public class MyWebSocketChannelHandler extends ChannelInitializer<SocketChannel>
     protected void initChannel(SocketChannel e) throws Exception {
 
         //添加具体的handler
+        e.pipeline().addLast("logging", new LoggingHandler(LogLevel.INFO)); //for better debug
         e.pipeline().addLast("http-codec",new HttpServerCodec());
         e.pipeline().addLast("aggregator",new HttpObjectAggregator(65536));
         e.pipeline().addLast("http-chunked",new ChunkedWriteHandler());

@@ -80,6 +80,9 @@ public class MyWebSockeHandler extends SimpleChannelInboundHandler<Object> {
         TextWebSocketFrame textWebSocketFrame = new TextWebSocketFrame(context.channel().id() + ":" + request);
         //服务端向每个连接上来的客户端发送消息
         NettyConfig.group.writeAndFlush(textWebSocketFrame);
+
+        //send to related user
+        //NettyConfig.group.find(context.channel().id()).writeAndFlush(textWebSocketFrame);
     }
 
 
