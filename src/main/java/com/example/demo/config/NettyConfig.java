@@ -1,24 +1,49 @@
 package com.example.demo.config;
 
-
 import com.example.demo.controller.MyWebSocketChannelHandler;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.Channel;
+import io.netty.channel.ChannelId;
 import io.netty.channel.EventLoopGroup;
 import io.netty.channel.group.ChannelGroup;
 import io.netty.channel.group.DefaultChannelGroup;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
+import io.netty.handler.codec.http.websocketx.TextWebSocketFrame;
 import io.netty.util.concurrent.GlobalEventExecutor;
-import org.springframework.context.annotation.Bean;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Configuration;
 
 import javax.annotation.PostConstruct;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 
+@Slf4j
 @Configuration
 public class NettyConfig {
     //存储每一个客户端接入进来的对象
     public static ChannelGroup group = new DefaultChannelGroup(GlobalEventExecutor.INSTANCE);
+    private  static ConcurrentMap<String, ChannelId> ChannelMap=new ConcurrentHashMap();
+
+    public  static void addChannel(Channel channel){
+        group.add(channel);
+        ChannelMap.put(channel.id().asShortText(),channel.id());
+        log.info("新连接建立 ID-shortText {} ChannelID {}", channel.id().asShortText(), channel.id());
+    }
+
+    public static void removeChannel(Channel channel){
+        group.remove(channel);
+        ChannelMap.remove(channel.id().asShortText());
+        log.info("连接被移出 ID-shortText {} ChannelID {}", channel.id().asShortText(), channel.id());
+    }
+
+    public static  Channel findChannel(String id){
+        return group.find(ChannelMap.get(id));
+    }
+
+    public static void send2All(TextWebSocketFrame tws){
+        group.writeAndFlush(tws);
+    }
 
     @PostConstruct
     private void autoStart() {
