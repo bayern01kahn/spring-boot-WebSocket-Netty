@@ -39,7 +39,7 @@ public class MyWebSocketChannelHandler extends ChannelInitializer<SocketChannel>
         //========================增加心跳支持 end      ========================
 
         //e.pipeline().addLast(new WebSocketServerCompressionHandler());
-        e.pipeline().addLast(new WebSocketServerProtocolHandler("/webSocket", null, true));
+        //e.pipeline().addLast(new WebSocketServerProtocolHandler("/webSocket", null, true));
         e.pipeline().addLast("handler",new MyWebSockeHandler());  //自定义的handler
 
         //执行时间较长的Handler 建议另外创建一个EventLoopGroup 来（额外的线程）单独处理，避免该handler影响其他线程执行效率和时间
