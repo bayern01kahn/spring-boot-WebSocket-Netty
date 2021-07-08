@@ -1,4 +1,4 @@
-package com.example.demo.controller;
+package com.example.demo.handler;
 
 import com.example.demo.config.NettyConfig;
 import com.example.demo.utils.RequestUriUtils;
@@ -17,8 +17,6 @@ import io.netty.util.CharsetUtil;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.Map;
-
-import static com.example.demo.config.NettyConfig.send2All;
 
 /**
  * 接受/处理/响应客户端websocke请求的核心业务处理类
@@ -45,7 +43,7 @@ public class MyWebSockeHandler extends SimpleChannelInboundHandler<Object> {
     //客户端与服务端创建链接的时候调用
     @Override
     public void channelActive (ChannelHandlerContext context)throws Exception{
-        NettyConfig.addChannel(context.channel());
+        //NettyConfig.addChannel(context.channel());
         System.out.println("客户端与服务端连接开启: "+ context.channel().remoteAddress().toString());
     }
     //客户端与服务端断开连接的时候调用
@@ -92,13 +90,18 @@ public class MyWebSockeHandler extends SimpleChannelInboundHandler<Object> {
         super.channelWritabilityChanged(ctx);
     }
 
-    //服务端处理客户端websocke请求的核心方法
+    //服务端处理客户端websockets请求的核心方法
     @Override
     protected void channelRead0(ChannelHandlerContext channelHandlerContext, Object o) throws Exception {
-        if (o instanceof TextWebSocketFrame) { // 此处仅处理 Text Frame
-            String request = ((TextWebSocketFrame) o).text();
-            channelHandlerContext.channel().writeAndFlush(new TextWebSocketFrame("收到: " + request));
-        }
+//        if (o instanceof TextWebSocketFrame) { // 此处仅处理 Text Frame
+//            String request = ((TextWebSocketFrame) o).text();
+//            channelHandlerContext.channel().writeAndFlush(new TextWebSocketFrame("收到: " + request));
+//        }
+
+        // 获取客户端传输过来的消息
+//        String content = msg.text();
+//        System.out.println("处理消息的handler:" + content);
+//        DataContent dataContent = JsonUtils.jsonToPojo(content, DataContent.class);
 
 
         //处理客户端向服务端发起的http握手请求
@@ -117,6 +120,7 @@ public class MyWebSockeHandler extends SimpleChannelInboundHandler<Object> {
     private void handWebSocketFrame(ChannelHandlerContext context,WebSocketFrame webSocketFrame){
         if (webSocketFrame instanceof CloseWebSocketFrame){//判断是否是关闭websocket的指令
             webSocketServerHandshaker.close(context.channel(),(CloseWebSocketFrame) webSocketFrame.retain());
+            return;
         }
         if (webSocketFrame instanceof PingWebSocketFrame){//判断是否是ping消息
             context.channel().write(new PongWebSocketFrame(webSocketFrame.content().retain()));
@@ -136,6 +140,7 @@ public class MyWebSockeHandler extends SimpleChannelInboundHandler<Object> {
         NettyConfig.send2All(textWebSocketFrame);
 
         //send to related user
+        NettyConfig.findChannelByUserId("1625713335483").writeAndFlush(textWebSocketFrame);
         //NettyConfig.group.find(context.channel().id()).writeAndFlush(textWebSocketFrame);
     }
 
@@ -152,7 +157,7 @@ public class MyWebSockeHandler extends SimpleChannelInboundHandler<Object> {
         String uri = fullHttpRequest.uri();
         Map<String, String> params = RequestUriUtils.getParams(uri);
         log.debug("客户端请求参数：{}", params);
-
+        NettyConfig.addChannel(params.get("userId"), context.channel());
 
         if (!fullHttpRequest.decoderResult().isSuccess() ||
                 !("websocket".equals(fullHttpRequest.headers().get("Upgrade")))){//要求Upgrade为websocket，过滤掉get/Post
@@ -172,7 +177,7 @@ public class MyWebSockeHandler extends SimpleChannelInboundHandler<Object> {
     }
 
     /**
-     * 服务端想客户端发送响应消息
+     * 服务端向客户端发送响应消息
      * @param context
      * @param fullHttpRequest
      * @param defaultFullHttpResponse

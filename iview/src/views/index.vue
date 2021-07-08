@@ -81,7 +81,8 @@
           initWebSocket(){ //初始化weosocket
                 //ws地址
                 //const wsuri = "ws://localhost:8888/webSocket";
-                const wsuri = "ws://localhost:8888/webSocket?userId=justin&userName=luo";
+                var time = new Date().getTime();
+                const wsuri = "ws://localhost:8888/webSocket?userId="+time;
                 this.websock = new WebSocket(wsuri);
                 this.websock.onmessage = this.websocketonmessage;
                 this.websock.onclose = this.websocketclose;
