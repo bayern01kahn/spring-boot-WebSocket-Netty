@@ -19,10 +19,10 @@ import lombok.extern.slf4j.Slf4j;
 import java.util.Map;
 
 /**
- * 接受/处理/响应客户端websocke请求的核心业务处理类
+ * 接受/处理/响应客户端websockets请求的核心业务处理类
  */
 @Slf4j
-public class MyWebSockeHandler extends SimpleChannelInboundHandler<Object> {
+public class MyWebSocketHandler extends SimpleChannelInboundHandler<Object> {
 
     private WebSocketServerHandshaker webSocketServerHandshaker;
     private static final String WEB_SOCKET_URL = "ws://localhost:8888/webSocket";
@@ -50,6 +50,7 @@ public class MyWebSockeHandler extends SimpleChannelInboundHandler<Object> {
     @Override
     public void channelInactive(ChannelHandlerContext context)throws Exception{
         NettyConfig.removeChannel(context.channel());
+        //context.channel().close();
         System.out.println("客户端与服务端连接断开 "+ context.channel().remoteAddress().toString());
     }
     //服务端接收客户端发送过来的数据结束之后调用
@@ -66,17 +67,17 @@ public class MyWebSockeHandler extends SimpleChannelInboundHandler<Object> {
         context.close();
     }
 
-    @Override
-    public void handlerAdded(ChannelHandlerContext ctx) throws Exception {
-        System.out.println("助手类添加");
-        super.handlerAdded(ctx);
-    }
-
-    @Override
-    public void handlerRemoved(ChannelHandlerContext ctx) throws Exception {
-        System.out.println("助手类移除");
-        super.handlerRemoved(ctx);
-    }
+//    @Override
+//    public void handlerAdded(ChannelHandlerContext ctx) throws Exception {
+//        System.out.println("助手类添加");
+//        super.handlerAdded(ctx);
+//    }
+//
+//    @Override
+//    public void handlerRemoved(ChannelHandlerContext ctx) throws Exception {
+//        System.out.println("助手类移除");
+//        super.handlerRemoved(ctx);
+//    }
 
     @Override
     public void userEventTriggered(ChannelHandlerContext ctx, Object evt) throws Exception {

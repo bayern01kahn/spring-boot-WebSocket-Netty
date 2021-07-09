@@ -4,11 +4,9 @@ import io.netty.channel.ChannelInitializer;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.handler.codec.http.HttpObjectAggregator;
 import io.netty.handler.codec.http.HttpServerCodec;
-import io.netty.handler.codec.http.websocketx.WebSocketServerProtocolHandler;
 import io.netty.handler.logging.LogLevel;
 import io.netty.handler.logging.LoggingHandler;
 import io.netty.handler.stream.ChunkedWriteHandler;
-import io.netty.handler.timeout.IdleStateHandler;
 
 /**
  * 初始化链接时候的组件
@@ -39,8 +37,8 @@ public class MyWebSocketChannelHandler extends ChannelInitializer<SocketChannel>
         //========================增加心跳支持 end      ========================
 
         //e.pipeline().addLast(new WebSocketServerCompressionHandler());
-        //e.pipeline().addLast(new WebSocketServerProtocolHandler("/webSocket", null, true));
-        e.pipeline().addLast("handler",new MyWebSockeHandler());  //自定义的handler
+        //e.pipeline().addLast(new WebSocketServerProtocolHandler("/webSocket", null, true));  //websocket支持,设置路由
+        e.pipeline().addLast("handler",new MyWebSocketHandler());  //自定义的handler
 
         //执行时间较长的Handler 建议另外创建一个EventLoopGroup 来（额外的线程）单独处理，避免该handler影响其他线程执行效率和时间
 //        EventLoopGroup group = new DefaultEventLoop();
