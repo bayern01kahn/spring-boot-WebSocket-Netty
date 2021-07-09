@@ -18,14 +18,14 @@ public class NettyServer {
 
     @PostConstruct
     private void autoStart() {
-        EventLoopGroup eventLoopGroup = new NioEventLoopGroup(2); //Boss 4 Accept Event
-        EventLoopGroup workGroup = new NioEventLoopGroup(64);      //Worker 4 Read/Write Event
+        EventLoopGroup bossGroup = new NioEventLoopGroup(); //Boss 4 Accept Event
+        EventLoopGroup workGroup = new NioEventLoopGroup();      //Worker 4 Read/Write Event
         try {
             //1.开启服务端
             ServerBootstrap serverBootstrap = new ServerBootstrap();
 
             //2.设置group (BossEventGroup[负责处理连接]， WorkerEventGroup[负责处理读写])
-            serverBootstrap.group(eventLoopGroup,workGroup);
+            serverBootstrap.group(bossGroup,workGroup);
 
             //3.选择 服务器的ServerSocketChannel实现类
             serverBootstrap.channel(NioServerSocketChannel.class);
@@ -48,7 +48,7 @@ public class NettyServer {
             e.printStackTrace();
         }finally {
             //退出程序
-            eventLoopGroup.shutdownGracefully();
+            bossGroup.shutdownGracefully();
             workGroup.shutdownGracefully();
         }
     }
