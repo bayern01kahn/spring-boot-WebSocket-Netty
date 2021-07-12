@@ -50,7 +50,8 @@ public class MyWebSocketHandler extends SimpleChannelInboundHandler<Object> {
     @Override
     public void channelInactive(ChannelHandlerContext context)throws Exception{
         NettyConfig.removeChannel(context.channel());
-        //context.channel().close();
+        context.channel().close();
+        context.close();
         System.out.println("客户端与服务端连接断开 "+ context.channel().remoteAddress().toString());
     }
     //服务端接收客户端发送过来的数据结束之后调用
@@ -67,17 +68,17 @@ public class MyWebSocketHandler extends SimpleChannelInboundHandler<Object> {
         context.close();
     }
 
-//    @Override
-//    public void handlerAdded(ChannelHandlerContext ctx) throws Exception {
-//        System.out.println("助手类添加");
-//        super.handlerAdded(ctx);
-//    }
-//
-//    @Override
-//    public void handlerRemoved(ChannelHandlerContext ctx) throws Exception {
-//        System.out.println("助手类移除");
-//        super.handlerRemoved(ctx);
-//    }
+    @Override
+    public void handlerAdded(ChannelHandlerContext ctx) throws Exception {
+        System.out.println("handler 被加载");
+        super.handlerAdded(ctx);
+    }
+
+    @Override
+    public void handlerRemoved(ChannelHandlerContext ctx) throws Exception {
+        System.out.println("handler 被移出");
+        super.handlerRemoved(ctx);
+    }
 
     @Override
     public void userEventTriggered(ChannelHandlerContext ctx, Object evt) throws Exception {
@@ -141,7 +142,7 @@ public class MyWebSocketHandler extends SimpleChannelInboundHandler<Object> {
         NettyConfig.send2All(textWebSocketFrame);
 
         //send to related user
-        NettyConfig.findChannelByUserId("1625713335483").writeAndFlush(textWebSocketFrame);
+        //NettyConfig.findChannelByUserId("1625713335483").writeAndFlush(textWebSocketFrame);
         //NettyConfig.group.find(context.channel().id()).writeAndFlush(textWebSocketFrame);
     }
 
