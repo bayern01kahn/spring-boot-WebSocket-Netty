@@ -28,9 +28,7 @@ public class MyWebSocketChannelHandler extends ChannelInitializer<SocketChannel>
         e.pipeline().addLast("aggregator",new HttpObjectAggregator(65536)); // 将多个消息转换为单一的FullHttpRequest或FullHttpResponse对象
         e.pipeline().addLast("http-chunked",new ChunkedWriteHandler()); //是支持异步发送大的码流,但不占用过多的内存,防止JAVA内存溢出
 
-
-
-        //针对客户端，如果在1分钟时没有想服务端发送写心跳(ALL)，则主动断开
+        //针对客户端，如果在1分钟时没有向服务端发送写心跳(ALL)，则主动断开
         //如果是读空闲或者写空闲，不处理
         //e.pipeline().addLast(new IdleStateHandler(8, 10, 12));
         //自定义的空闲检测
